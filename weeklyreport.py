@@ -90,7 +90,7 @@ def tickets_inprogress(auth_jira, week_no, proj):
     if len(projects) >= 1:
         for i in projects:
             issue = auth_jira.issue(f'{i}')
-            print(f"{issue.fields.customfield_10201}\t{issue.fields.resolution}\t{issue.fields.created}")
+            print(f"{issue.fields.customfield_10201}\t{issue.fields.resolution}\t{issue.fields.updated}")
     else:
         print("None")
 
@@ -112,7 +112,7 @@ def tickets_submitted(auth_jira, week_no, proj):
     if len(projects) >= 1:
         for i in projects:
             issue = auth_jira.issue(f'{i}')
-            print(f"{issue.fields.customfield_10201}\t{issue.fields.resolution}\t{issue.fields.created}")
+            print(f"{issue.fields.customfield_10201}\t{issue.fields.resolution}\t{issue.fields.updated}")
     else:
         print("None")
     pass
