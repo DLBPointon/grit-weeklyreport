@@ -132,7 +132,7 @@ def tickets_submitted(auth_jira, week_no, proj):
 
 
 def main():
-    project_list = ['= "Darwin"', '!= "Darwin"']
+    project_list = ['= "Darwin"', '!= "Darwin"']  # ASG will need to be added once in use.
     week_no = sys.argv[1]
     username = sys.argv[2]
     password = sys.argv[3]
