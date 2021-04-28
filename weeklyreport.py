@@ -57,7 +57,10 @@ def tickets_new(auth_jira, week_no, proj):
     if len(projects) >= 1:
         for i in projects:
             issue = auth_jira.issue(f'{i}')
-            print(f"{issue.fields.customfield_10201}\t{issue.fields.resolution}\t{issue.fields.created}")
+            print(f"{issue.fields.customfield_10201}\t"
+                  f"{issue.fields.issuetype.name}\t"
+                  f"{issue.fields.resolution}\t"
+                  f"{issue.fields.created}")
     else:
         print("None")
 
@@ -90,7 +93,10 @@ def tickets_inprogress(auth_jira, week_no, proj):
     if len(projects) >= 1:
         for i in projects:
             issue = auth_jira.issue(f'{i}')
-            print(f"{issue.fields.customfield_10201}\t{issue.fields.resolution}\t{issue.fields.updated}")
+            print(f"{issue.fields.customfield_10201}\t"
+                  f"{issue.fields.issuetype.name}\t"
+                  f"{issue.fields.resolution}\t"
+                  f"{issue.fields.updated}")
     else:
         print("None")
 
@@ -99,20 +105,25 @@ def tickets_submitted(auth_jira, week_no, proj):
     if week_no == '-n':
         projects = auth_jira.search_issues(f'project="Assembly curation" AND type {proj} AND '
                                            f'resolution = "In progress" AND status = Submitted OR '
-                                           f'status = "In Submission" AND updated > startOfWeek() AND '
-                                           f'updated < endOfWeek()')
+                                           f'type {proj} AND resolution = "In progress" AND '
+                                           f'status = "In Submission" AND updated > startOfWeek() '
+                                           f'AND updated < endOfWeek()')
     else:
         projects = auth_jira.search_issues(f'project="Assembly curation" AND type {proj} AND '
                                            f'resolution = "In progress" AND status = Submitted OR '
-                                           f'status = "In Submission" AND updated > startOfWeek({week_no}) AND '
-                                           f'updated < endOfWeek({week_no})')
+                                           f'type {proj} AND resolution = "In progress" AND '
+                                           f'status = Submitted OR status = "In Submission" AND '
+                                           f'updated > startOfWeek({week_no}) AND updated < endOfWeek({week_no})')
 
     print(f" ---- Submitted/Insubmission Tickets ({proj})---- ")
 
     if len(projects) >= 1:
         for i in projects:
             issue = auth_jira.issue(f'{i}')
-            print(f"{issue.fields.customfield_10201}\t{issue.fields.resolution}\t{issue.fields.updated}")
+            print(f"{issue.fields.customfield_10201}\t"
+                  f"{issue.fields.issuetype.name}\t"
+                  f"{issue.fields.resolution}\t"
+                  f"{issue.fields.updated}")
     else:
         print("None")
     pass
