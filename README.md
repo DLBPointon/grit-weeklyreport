@@ -1,13 +1,15 @@
 Welcome to the Weekly Report for Jira in GRIT
 by dp24
 
-Pulls data in weekly increments.
-TolID /t Project_id /t Status of Ticket /t Current Resolution /t Date of Ticket Creation
+This script pulls weekly data split by project, and further split by:
+    - Tickets new
+    - Tickets modified
+    - Tickets Finished
 
 Usage:
 - For most recent week report
 
-`python3 weeklyreport.py`
+`python3 weeklyreport.py -n {USER} {PASS}`
 
 - For one week in the past
 
