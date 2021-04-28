@@ -3,16 +3,15 @@ Welcome to the Weekly Report for Jira in GRIT
 by dp24
 
 Pulls
-Weekly data.
-
-New tickets come in.    - Date
-tickets in progress (any status not open, submitted or done) - Status
-tickets at submitted - Submitted
-split Darwin, ASG, other - project_type
+Weekly data split by project
+    - Tickets new
+    - Tickets modified
+    - Tickets Finished
+All within a specified week.
 
 Usage:
     - For most recent week report
-python3 weeklyreport.py
+python3 weeklyreport.py -n {USER} {PASS}
 
     - For one week in the past
 python3 weeklyreport.py -1w {USER} {PASS}
@@ -22,6 +21,9 @@ python3 weeklyreport.py -2w {USER} {PASS}
 
     - Output to TSV with:
 python3 weeklyreport.py -1w {USER} {PASS} > {TITLE}.tsv
+
+TO DO:
+ADD a more secure method for credentials
 """
 import sys
 from jira import JIRA
