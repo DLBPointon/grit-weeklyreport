@@ -84,18 +84,16 @@ def tickets_inprogress(auth_jira, week_no, proj):
         projects = auth_jira.search_issues(f'project="Assembly curation" AND '
                                            f'type {proj} AND '
                                            f'resolution = "In progress" AND '
-                                           f'status != "Submitted" AND '
-                                           f'updated > startOfWeek() AND '
-                                           f'updated < endOfWeek()',
-                                           maxResults=10000)
+                                           f'status != "Submitted"'
+                                           , maxResults=10000)
     else:
         projects = auth_jira.search_issues(f'project="Assembly curation" AND '
                                            f'type {proj} AND '
                                            f'resolution = "In progress" AND '
                                            f'status != "Submitted" AND '
                                            f'updated > startOfWeek({week_no}) AND '
-                                           f'updated < endOfWeek({week_no})',
-                                           maxResults=10000)
+                                           f'updated < endOfWeek({week_no})'
+                                           , maxResults=10000)
 
     print(f" ---- Inprogress Tickets ({proj})---- ")
 
