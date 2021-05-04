@@ -81,6 +81,8 @@ def tickets_inprogress(auth_jira, week_no, proj):
 
     # NEED TO ADD ABOUT IN SUBMISSION TOO
     if week_no == '-n':
+        # This doesn't use datetime stuff at all on purpose,
+        # if it did it would remove tickets that are not updated at least once per week.
         projects = auth_jira.search_issues(f'project="Assembly curation" AND '
                                            f'type {proj} AND '
                                            f'resolution = "In progress" AND '
