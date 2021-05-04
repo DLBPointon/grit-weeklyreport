@@ -80,13 +80,13 @@ def tickets_inprogress(auth_jira, week_no, proj):
     if week_no == '-n':
         projects = auth_jira.search_issues(f'project="Assembly curation" AND type {proj} AND '
                                            f'resolution = "In progress" AND status != Submitted AND '
-                                           f'status != "In Submission" AND updated > startOfWeek() AND '
+                                           f'status != "Submitted" AND updated > startOfWeek() AND '
                                            f'updated < endOfWeek()',
                                            maxResults=10000)
     else:
         projects = auth_jira.search_issues(f'project="Assembly curation" AND type {proj} AND '
                                            f'resolution = "In progress" AND status != Submitted AND '
-                                           f'status != "In Submission" AND updated > startOfWeek({week_no}) AND '
+                                           f'status != "Submitted" AND updated > startOfWeek({week_no}) AND '
                                            f'updated < endOfWeek({week_no})',
                                            maxResults=10000)
 
@@ -106,18 +106,14 @@ def tickets_inprogress(auth_jira, week_no, proj):
 def tickets_submitted(auth_jira, week_no, proj):
     if week_no == '-n':
         projects = auth_jira.search_issues(f'project="Assembly curation" AND type {proj} AND '
-                                           f'resolution = "In progress" AND status = Submitted OR '
-                                           f'type {proj} AND resolution = "In progress" AND '
-                                           f'status = "In Submission" AND updated > startOfWeek() '
-                                           f'AND updated < endOfWeek()')
+                                           f'resolution = "In progress" OR type {proj} AND resolution = "Done" AND '
+                                           f'status = Submitted AND updated > startOfWeek() AND updated < endOfWeek()')
     else:
         projects = auth_jira.search_issues(f'project="Assembly curation" AND type {proj} AND '
-                                           f'resolution = "In progress" AND status = Submitted OR '
-                                           f'type {proj} AND resolution = "In progress" AND '
-                                           f'status = Submitted OR status = "In Submission" AND '
+                                           f'resolution = "In progress" AND status = Submitted AND '
                                            f'updated > startOfWeek({week_no}) AND updated < endOfWeek({week_no})')
 
-    print(f" ---- Submitted/Insubmission Tickets ({proj})---- ")
+    print(f" ---- Submitted Tickets ({proj})---- ")
 
     if len(projects) >= 1:
         for i in projects:
@@ -143,7 +139,6 @@ def main():
         tickets_new(auth_jira, week_no, proj)
         tickets_inprogress(auth_jira, week_no, proj)
         tickets_submitted(auth_jira, week_no, proj)
-
 
 if __name__ == "__main__":
     main()
