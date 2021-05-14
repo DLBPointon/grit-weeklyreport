@@ -9,6 +9,9 @@ Weekly data split by project
     - Tickets Finished
 All within a specified week.
 
+REQUIRES:
+- jira
+
 Usage:
     - For most recent week report
 python3 weeklyreport.py -n {USER} {PASS}
@@ -141,7 +144,7 @@ def tickets_submitted(auth_jira, week_no, proj):
 
 
 def main():
-    project_list = ['= "Darwin"', '!= "Darwin"']  # ASG will need to be added once in use.
+    project_list = ['= "Darwin"', '!= "Darwin"']  # ASG will need to be added once in use. - 3, '!= "ASG" AND != "Darwin"'
     week_no = sys.argv[1]
     username = sys.argv[2]
     password = sys.argv[3]
