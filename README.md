@@ -29,6 +29,9 @@ REQUIRMENTS
 This does require the jira module:
 `pip install jira`
 
+Results example:
+weekly14052021.tsv
+
 ## manual_report.py
 Manual Interventions Reporting in GRIT
 by dp24
@@ -52,3 +55,7 @@ Usage:
 `- python3 manual_report {USER} {PASSWORD}`
 
 `- python3 manual_report {USER} {PASSWORD} > {SOMETHING}.tsv`
+
+Results example:
+
+manual14052021.tsv
