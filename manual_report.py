@@ -25,6 +25,15 @@ Usage:
 import sys
 from jira import JIRA
 import re
+import os
+from dotenv import load_dotenv
+
+
+def dotloader():
+    load_dotenv()
+    jira_user = os.getenv('JIRA_USER')
+    jira_pass = os.getenv('JIRA_PASS')
+    return jira_user, jira_pass
 
 
 def authorise(user, password):
@@ -90,8 +99,7 @@ def get_info(auth_jira, proj):
 
 def main():
     project_list = ['= "Darwin"', '= "VGP+"', '= "VGP orders"']
-    username = sys.argv[1]
-    password = sys.argv[2]
+    username, password = dotloader()
 
     auth_jira = authorise(username, password)
 

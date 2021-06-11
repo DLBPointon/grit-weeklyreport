@@ -14,22 +14,29 @@ REQUIRES:
 
 Usage:
     - For most recent week report
-python3 weeklyreport.py -n {USER} {PASS}
+python3 weeklyreport.py -n
 
     - For one week in the past
-python3 weeklyreport.py -1w {USER} {PASS}
+python3 weeklyreport.py -1w
 
     - Two weeks would be
-python3 weeklyreport.py -2w {USER} {PASS}
+python3 weeklyreport.py -2w
 
     - Output to TSV with:
-python3 weeklyreport.py -1w {USER} {PASS} > {TITLE}.tsv
+python3 weeklyreport.py -1w > {TITLE}.tsv
 
-TO DO:
-ADD a more secure method for credentials
 """
 import sys
 from jira import JIRA
+import os
+from dotenv import load_dotenv
+
+
+def dotloader():
+    load_dotenv()
+    jira_user = os.getenv('JIRA_USER')
+    jira_pass = os.getenv('JIRA_PASS')
+    return jira_user, jira_pass
 
 
 def authorise(user, password):
@@ -144,10 +151,11 @@ def tickets_submitted(auth_jira, week_no, proj):
 
 
 def main():
-    project_list = ['= "Darwin"', '!= "Darwin"']  # ASG will need to be added once in use. - 3, '!= "ASG" AND != "Darwin"'
+    # ASG will need to be added once in use. - 3, '!= "ASG" AND != "Darwin"'
+    project_list = ['= "Darwin"', '!= "Darwin"']
+
+    username, password = dotloader()
     week_no = sys.argv[1]
-    username = sys.argv[2]
-    password = sys.argv[3]
 
     auth_jira = authorise(username, password)
 
@@ -155,6 +163,7 @@ def main():
         tickets_new(auth_jira, week_no, proj)
         tickets_inprogress(auth_jira, week_no, proj)
         tickets_submitted(auth_jira, week_no, proj)
+
 
 if __name__ == "__main__":
     main()
