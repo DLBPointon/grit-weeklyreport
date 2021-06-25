@@ -27,6 +27,7 @@ from jira import JIRA
 import re
 import os
 from dotenv import load_dotenv
+from datetime import date
 
 
 def dotloader():
@@ -65,24 +66,15 @@ def reg_length_info(scaff_data):
     return length_before, length_after
 
 
-def get_info(auth_jira, proj):
-
-    projects = auth_jira.search_issues(f'project="Assembly curation" AND '
-                                       f'type {proj} AND '
-                                       f'status = "In Submission" OR '
-                                       f'project="Assembly curation" AND '
-                                       f'type {proj} AND '
-                                       f'status = "Submitted" OR '
-                                       f'project="Assembly curation" AND '
-                                       f'type {proj} AND '
-                                       f'status = "Post Processing++"',
+def get_info(auth_jira, queue, search_string, project):
+    projects = auth_jira.search_issues(search_string,
                                        maxResults=10000)
 
     i = ''
     length_after = None
     length_before = None
 
-    print(f' --- {proj} --- ')
+    print(f' --- {queue}: {project} --- ')
     print(f'TOLID\tBREAKS\tJOINS\tHAP_REMOVE\tASSEMBLY_LENGTH_AC')
 
     for i in projects:
@@ -98,13 +90,20 @@ def get_info(auth_jira, proj):
 
 
 def main():
+    proj = ''
+    queue_code = ['"Rapid Curation"', '"Assembly curation"']
     project_list = ['= "Darwin"', '= "VGP+"', '= "VGP orders"']
     username, password = dotloader()
 
     auth_jira = authorise(username, password)
 
-    for proj in project_list:
-        get_info(auth_jira, proj)
+    print(f'============== START for {date.today()} ============')
+    for i in queue_code:
+        for ii in project_list:
+            proj_search = f'project={i} AND type {ii} AND status IN ("In Submission", "Submitted", "Post Processing++")'
+            get_info(auth_jira, i, proj_search, ii)
+        print('================ QUEUE BREAK ================')
+    print(f'============== END for {date.today()} =============')
 
 
 if __name__ == '__main__':

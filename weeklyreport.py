@@ -30,6 +30,7 @@ import sys
 from jira import JIRA
 import os
 from dotenv import load_dotenv
+from datetime import date
 
 
 def dotloader():
@@ -45,28 +46,29 @@ def authorise(user, password):
     return auth_jira
 
 
-def tickets_new(auth_jira, week_no, proj):
+def tickets_new(auth_jira, week_no, proj, queue):
     """
     Tickets that were created this week
+    :param queue:
     :param auth_jira:
     :param week_no:
     :param proj:
     :return:
     """
     if week_no == '-n':
-        projects = auth_jira.search_issues(f'project="Assembly curation" AND '
+        projects = auth_jira.search_issues(f'project={queue} AND '
                                            f'type {proj} AND '
                                            f'created > startOfWeek() AND '
                                            f'created < endOfWeek()',
                                            maxResults=10000)
     else:
-        projects = auth_jira.search_issues(f'project="Assembly curation" AND '
+        projects = auth_jira.search_issues(f'project={queue} AND '
                                            f'type {proj} AND '
                                            f'created > startOfWeek({week_no}) AND '
                                            f'created < endOfWeek({week_no})',
                                            maxResults=10000)
 
-    print(f" ---- New Tickets ({proj})---- ")
+    print(f" ---- New Tickets ({queue}: {proj})---- ")
 
     if len(projects) >= 1:
         for i in projects:
@@ -80,9 +82,10 @@ def tickets_new(auth_jira, week_no, proj):
         print("None")
 
 
-def tickets_inprogress(auth_jira, week_no, proj):
+def tickets_inprogress(auth_jira, week_no, proj, queue):
     """
     Tickets that have been updated in the past week
+    :param queue:
     :param auth_jira:
     :param week_no:
     :param proj:
@@ -93,13 +96,13 @@ def tickets_inprogress(auth_jira, week_no, proj):
     if week_no == '-n':
         # This doesn't use datetime stuff at all on purpose,
         # if it did it would remove tickets that are not updated at least once per week.
-        projects = auth_jira.search_issues(f'project="Assembly curation" AND '
+        projects = auth_jira.search_issues(f'project={queue} AND '
                                            f'type {proj} AND '
                                            f'resolution = "In progress" AND '
                                            f'status != "Submitted"'
                                            , maxResults=10000)
     else:
-        projects = auth_jira.search_issues(f'project="Assembly curation" AND '
+        projects = auth_jira.search_issues(f'project={queue} AND '
                                            f'type {proj} AND '
                                            f'resolution = "In progress" AND '
                                            f'status != "Submitted" AND '
@@ -107,7 +110,7 @@ def tickets_inprogress(auth_jira, week_no, proj):
                                            f'updated < endOfWeek({week_no})'
                                            , maxResults=10000)
 
-    print(f" ---- Inprogress Tickets ({proj})---- ")
+    print(f" ---- Inprogress Tickets ({queue}: {proj}) ---- ")
 
     if len(projects) >= 1:
         for i in projects:
@@ -121,21 +124,21 @@ def tickets_inprogress(auth_jira, week_no, proj):
         print("None")
 
 
-def tickets_submitted(auth_jira, week_no, proj):
+def tickets_submitted(auth_jira, week_no, proj, queue):
     if week_no == '-n':
-        projects = auth_jira.search_issues(f'project="Assembly curation" AND '
+        projects = auth_jira.search_issues(f'project={queue} AND '
                                            f'type {proj} AND '
                                            f'status = Submitted AND '
                                            f'updated > startOfWeek() AND '
                                            f'updated < endOfWeek()')
     else:
-        projects = auth_jira.search_issues(f'project="Assembly curation" AND '
+        projects = auth_jira.search_issues(f'project={queue} AND '
                                            f'type {proj} AND '
                                            f'status = Submitted AND '
                                            f'updated > startOfWeek({week_no}) AND '
                                            f'updated < endOfWeek({week_no})')
 
-    print(f" ---- Submitted Tickets ({proj})---- ")
+    print(f" ---- Submitted Tickets ({queue}: {proj})---- ")
 
     if len(projects) >= 1:
         for i in projects:
@@ -152,6 +155,7 @@ def tickets_submitted(auth_jira, week_no, proj):
 
 def main():
     # ASG will need to be added once in use. - 3, '!= "ASG" AND != "Darwin"'
+    queue_list = ['"Rapid Curation"', '"Assembly curation"']
     project_list = ['= "Darwin"', '!= "Darwin"']
 
     username, password = dotloader()
@@ -159,10 +163,14 @@ def main():
 
     auth_jira = authorise(username, password)
 
-    for proj in project_list:
-        tickets_new(auth_jira, week_no, proj)
-        tickets_inprogress(auth_jira, week_no, proj)
-        tickets_submitted(auth_jira, week_no, proj)
+    print(f'============== START for {date.today()} ============')
+    for i in queue_list:
+        for proj in project_list:
+            tickets_new(auth_jira, week_no, proj, i)
+            tickets_inprogress(auth_jira, week_no, proj, i)
+            tickets_submitted(auth_jira, week_no, proj, i)
+        print('================ QUEUE BREAK ================')
+    print(f'============== END for {date.today()} =============')
 
 
 if __name__ == "__main__":
