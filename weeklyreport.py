@@ -30,7 +30,8 @@ import sys
 from jira import JIRA
 import os
 from dotenv import load_dotenv
-from datetime import date
+import datetime
+import maya
 
 
 def dotloader():
@@ -73,10 +74,12 @@ def tickets_new(auth_jira, week_no, proj, queue):
     if len(projects) >= 1:
         for i in projects:
             issue = auth_jira.issue(f'{i}')
+            obj = maya.parse(issue.fields.created).datetime()
+            ymd_date = obj.date().strftime('%Y-%m-%d')
             print(f"{issue.fields.customfield_10201}\t"
                   f"{issue.fields.issuetype.name}\t"
                   f"{issue.fields.resolution}\t"
-                  f"{issue.fields.created}\t"
+                  f"{ymd_date}\t"
                   f"{issue.fields.status}")
     else:
         print("None")
@@ -94,31 +97,49 @@ def tickets_inprogress(auth_jira, week_no, proj, queue):
 
     # NEED TO ADD ABOUT IN SUBMISSION TOO
     if week_no == '-n':
-        # This doesn't use datetime stuff at all on purpose,
-        # if it did it would remove tickets that are not updated at least once per week.
-        projects = auth_jira.search_issues(f'project={queue} AND '
-                                           f'type {proj} AND '
-                                           f'resolution = "In progress" AND '
-                                           f'status != "Submitted"'
-                                           , maxResults=10000)
+        if queue == '"Rapid Curation"':
+            projects = auth_jira.search_issues(f'project={queue} AND '
+                                               f'type {proj} AND '
+                                               f'resolution = "Unresolved" AND '
+                                               f'status != "Submitted"',
+                                               maxResults=10000)
+        else:
+            # This doesn't use datetime stuff at all on purpose,
+            # if it did it would remove tickets that are not updated at least once per week.
+            projects = auth_jira.search_issues(f'project={queue} AND '
+                                               f'type {proj} AND '
+                                               f'resolution = "In progress" AND '
+                                               f'status != "Submitted"',
+                                               maxResults=10000)
     else:
-        projects = auth_jira.search_issues(f'project={queue} AND '
-                                           f'type {proj} AND '
-                                           f'resolution = "In progress" AND '
-                                           f'status != "Submitted" AND '
-                                           f'updated > startOfWeek({week_no}) AND '
-                                           f'updated < endOfWeek({week_no})'
-                                           , maxResults=10000)
+        if queue == '"Rapid Curation"':
+            projects = auth_jira.search_issues(f'project={queue} AND '
+                                               f'type {proj} AND '
+                                               f'resolution = "Unresolved" AND '
+                                               f'status != "Submitted" AND '
+                                               f'updated > startOfWeek({week_no}) AND '
+                                               f'updated < endOfWeek({week_no})',
+                                               maxResults=10000)
+        else:
+            projects = auth_jira.search_issues(f'project={queue} AND '
+                                               f'type {proj} AND '
+                                               f'resolution = "In progress" AND '
+                                               f'status != "Submitted" AND '
+                                               f'updated > startOfWeek({week_no}) AND '
+                                               f'updated < endOfWeek({week_no})',
+                                               maxResults=10000)
 
     print(f" ---- Inprogress Tickets ({queue}: {proj}) ---- ")
 
     if len(projects) >= 1:
         for i in projects:
             issue = auth_jira.issue(f'{i}')
+            obj = maya.parse(issue.fields.updated).datetime()
+            ymd_date = obj.date().strftime('%Y-%m-%d')
             print(f"{issue.fields.customfield_10201}\t"
                   f"{issue.fields.issuetype.name}\t"
                   f"{issue.fields.resolution}\t"
-                  f"{issue.fields.updated}\t"
+                  f"{ymd_date}\t"
                   f"{issue.fields.status}")
     else:
         print("None")
@@ -143,10 +164,12 @@ def tickets_submitted(auth_jira, week_no, proj, queue):
     if len(projects) >= 1:
         for i in projects:
             issue = auth_jira.issue(f'{i}')
+            obj = maya.parse(issue.fields.updated).datetime()
+            ymd_date = obj.date().strftime('%Y-%m-%d')
             print(f"{issue.fields.customfield_10201}\t"
                   f"{issue.fields.issuetype.name}\t"
                   f"{issue.fields.resolution}\t"
-                  f"{issue.fields.updated}\t"
+                  f"{ymd_date}\t"
                   f"{issue.fields.status}")
     else:
         print("None")
@@ -163,17 +186,15 @@ def main():
 
     auth_jira = authorise(username, password)
 
-    print(f'============== START for {date.today()} ============')
+    print(f'============== START for {datetime.date.today()} ============')
     for i in queue_list:
         for proj in project_list:
             tickets_new(auth_jira, week_no, proj, i)
             tickets_inprogress(auth_jira, week_no, proj, i)
             tickets_submitted(auth_jira, week_no, proj, i)
         print('================ QUEUE BREAK ================')
-    print(f'============== END for {date.today()} =============')
+    print(f'============== END for {datetime.date.today()} =============')
 
 
 if __name__ == "__main__":
     main()
-
-
