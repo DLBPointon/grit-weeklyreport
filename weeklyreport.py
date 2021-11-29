@@ -153,13 +153,13 @@ def tickets_submitted(auth_jira, week_no, proj, queue):
     if week_no == '-n':
         projects = auth_jira.search_issues(f'project={queue} AND '
                                            f'type {proj} AND '
-                                           f'status = Submitted AND '
+                                           f'status = Submitted AND status = "In Submission" AND '
                                            f'updated > startOfWeek() AND '
                                            f'updated < endOfWeek()')
     else:
         projects = auth_jira.search_issues(f'project={queue} AND '
                                            f'type {proj} AND '
-                                           f'status = Submitted AND '
+                                           f'status = Submitted AND status = "In Submission" AND '
                                            f'updated > startOfWeek({week_no}) AND '
                                            f'updated < endOfWeek({week_no})')
 
@@ -183,7 +183,7 @@ def tickets_submitted(auth_jira, week_no, proj, queue):
 def main():
     # ASG will need to be added once in use. - 3, '!= "ASG" AND != "Darwin"'
     queue_list = ['"Rapid Curation"', '"Assembly curation"']
-    project_list = ['= "Darwin"', '!= "Darwin"']
+    project_list = ['= "Darwin"', '= "VGP"', '= "VGP+"', '= "ASG"', '= "ERGA"', '= "Faculty"', '= "Other"']
 
     username, password = dotloader()
     week_no = sys.argv[1]
