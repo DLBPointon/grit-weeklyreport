@@ -101,7 +101,9 @@ def tickets_inprogress(auth_jira, week_no, proj, queue):
             projects = auth_jira.search_issues(f'project={queue} AND '
                                                f'type {proj} AND '
                                                f'resolution = "Unresolved" AND '
-                                               f'status != "Submitted"',
+                                               f'status != "Submitted" AND '
+                                               f'updated > startOfWeek() AND '
+                                               f'updated < endOfWeek()',
                                                maxResults=10000)
         else:
             # This doesn't use datetime stuff at all on purpose,
@@ -109,7 +111,9 @@ def tickets_inprogress(auth_jira, week_no, proj, queue):
             projects = auth_jira.search_issues(f'project={queue} AND '
                                                f'type {proj} AND '
                                                f'resolution = "In progress" AND '
-                                               f'status != "Submitted"',
+                                               f'status != "Submitted" AND '
+                                               f'updated > startOfWeek() AND '
+                                               f'updated < endOfWeek()',
                                                maxResults=10000)
     else:
         if queue == '"Rapid Curation"':

@@ -92,7 +92,7 @@ def get_info(auth_jira, queue, search_string, project):
 def main():
     proj = ''
     queue_code = ['"Rapid Curation"', '"Assembly curation"']
-    project_list = ['= "Darwin"', '= "VGP+"', '= "VGP orders"']
+    project_list = ['= "Darwin"', '= "VGP"', '= "VGP+"', '= "ASG"', '= "ERGA"', '= "Faculty"', '= "Other"']
     username, password = dotloader()
 
     auth_jira = authorise(username, password)
